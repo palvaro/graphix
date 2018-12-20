@@ -11,8 +11,12 @@ insert into graphs values (2, 1, 0);
 insert into nodes values (2, 4, "A");
 insert into nodes values (2, 5, "B");
 insert into nodes values (2, 6, "C");
+insert into nodes values (2, -6, "E");
+
 insert into edges values (4, 5, NULL);
 insert into edges values (4, 6, NULL);
+insert into edges values (4, -6, NULL);
+
 insert into nodes values (2, 7, "D");
 insert into edges values  (6, 7, NULL);
 

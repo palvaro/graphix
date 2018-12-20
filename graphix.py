@@ -1,5 +1,5 @@
 from codecs import open
-import tatsu, sqlite3, os
+import tatsu, sqlite3, os, hashlib
 
 import cmd
 
@@ -92,12 +92,18 @@ if not exists:
     #ic.executescript(data)
 
 class CommandLine(cmd.Cmd):
+    def __init__(self, logging=False):
+        cmd.Cmd.__init__(self)
+        self.logging = logging
+        if logging:
+            self.logfp = open("log.html", "w")
+
+
     def default(self, utterance):
-        print "UTTER: " + utterance
         ast = parser.parse(utterance, semantics=QuerySemantics())
         print "AST " + str(ast)
         c.execute(ast)
-        dot = Digraph()
+        dot = Digraph(format='png')
         cnt = 0
         for row in c.fetchall():
             cnt += 1
@@ -110,8 +116,22 @@ class CommandLine(cmd.Cmd):
         else:
             print "No results."
 
+        if self.logging:
+            name = hashlib.md5(utterance).hexdigest()
+            fn = 'graphix.' + name + '.dot'
+            dot.render(fn, "img")
+            self.logfp.write("<br>")
+            self.logfp.write("Expression: <b><h3>" + utterance  + "</b></h3>")
+            self.logfp.write("<br>")
+            self.logfp.write("<img src = \"img/graphix." + name + ".dot.png\">")
+            self.logfp.write("<hr>")
+            
+            
+
     def do_exit(self, utterance):
+        if self.logging:
+            self.logfp.close()
         return True
 
-CommandLine().cmdloop()
+CommandLine(True).cmdloop()
 
