@@ -1,0 +1,27 @@
+@@grammar::FOO
+
+start = 
+        | assn
+        | expr
+        $ ;
+
+expr = 
+    | left:expr op:'^' ~ right:term
+    | left:expr op: 'U' ~ right:term
+    | left:expr op:'-' ~ right:term
+    | term
+    ;
+
+term = 
+    | '(' ~ t:expr ')'
+    | t:number
+    | t:bareident
+    ;
+
+assn = name:ident '=' ~ e:expr;
+
+bareident = i:ident ;
+
+number = /\d+/ ; 
+
+ident = /[a-z]+/ ;
