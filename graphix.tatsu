@@ -3,6 +3,8 @@
 start = 
         | assn
         | expr
+        | list
+        | dml
         $ ;
 
 expr = 
@@ -13,15 +15,28 @@ expr =
     ;
 
 term = 
-    | '(' ~ t:expr ')'
-    | t:number
+    | '(' t:expr ')'
+    | t:barenumber
     | t:bareident
     ;
 
 assn = name:ident '=' ~ e:expr;
 
+list = 'graphs' ;
+
+dml =
+    | add
+    | rem
+    ;
+
+add = '+' row ; 
+rem = '-' row ;
+
+row = gid:number ':' from_n:ident '->' to_n:ident ;
+
 bareident = i:ident ;
+barenumber = n:number ;
 
 number = /\d+/ ; 
 
-ident = /[a-z]+/ ;
+ident = /[a-z_]+/ ;
