@@ -44,13 +44,11 @@ class QuerySemantics(object):
         elif ast.op == u'^':
             return "select * from (" + ast.left + " INTERSECT " + ast.right + ")"
         elif ast.op == u'U':
-            print "UNION"
             return "select * from (" + ast.left + " UNION " + ast.right + ")"
         elif ast.op == u'-':
             return "select * from (" + ast.left + " EXCEPT " + ast.right + ")"
 
     def term(self, ast):
-        print "TERM " + str(ast)
         if not isinstance(ast, AST):
             return ast
         else:
@@ -63,11 +61,9 @@ class QuerySemantics(object):
             return "CREATE VIEW " + ast.name + " AS " + ast.e
 
     def bareident(self, ast):
-        print "BI"
         return "select * from " + ast.i
 
     def listing(self, ast):
-        print "LST"
         if ast == "graphs":
             return "select graph_id from graphs"
 
@@ -107,8 +103,7 @@ class CommandLine(cmd.Cmd):
         cnt = 0
         for row in c.fetchall():
             cnt += 1
-            print str(row)
-            print type(row[0])
+            #print str(row)
             dot.edge(row[0].encode("ascii", "ignore"), row[1].encode("ascii", "ignore"), "")
 
         if cnt > 0:
