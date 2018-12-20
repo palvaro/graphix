@@ -1,0 +1,4 @@
+digraph {
+		A -> B [label=""]
+		A -> X [label=""]
+}
