@@ -39,7 +39,7 @@ class QuerySemantics(object):
     def barenumber(self, ast):
         return "select from_n, to_n from logical where graph_id = " + ast.n
 
-    def expr(self, ast):
+    def expr2(self, ast):
         if not isinstance(ast, AST):
             return ast
         elif ast.op == u'^':
@@ -48,6 +48,28 @@ class QuerySemantics(object):
             return "select * from (" + ast.left + " UNION " + ast.right + ")"
         elif ast.op == u'-':
             return "select * from (" + ast.left + " EXCEPT " + ast.right + ")"
+
+    def expr(self, ast):
+        return ast.e
+
+    def intersect(self, ast):
+        if not isinstance(ast, AST):
+            return ast
+        else:
+            return "select * from (" + ast.left + " INTERSECT " + ast.right + ")"
+
+    def union(self, ast):
+        if not isinstance(ast, AST):
+            return ast
+        else:
+            return "select * from (" + ast.left + " UNION " + ast.right + ")"
+
+    def minus(self, ast):
+        if not isinstance(ast, AST):
+            return ast
+        else:
+            return "select * from (" + ast.left + " EXCEPT " + ast.right + ")"
+
 
     def term(self, ast):
         if not isinstance(ast, AST):

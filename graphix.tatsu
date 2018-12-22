@@ -7,12 +7,23 @@ start =
         | dml
         $ ;
 
-expr = 
+expr2 = 
     | left:expr op:'^' ~ right:term
     | left:expr op: 'U' ~ right:term
     | left:expr op:'-' ~ right:term
     | term
     ;
+
+expr =
+    | e:intersect
+    | e:union
+    | e:minus
+    | e:term
+    ;
+
+intersect = left:expr '^' right:term ;
+union = left:expr 'U' right:term ;
+minus = left:expr '-' right:term ;
 
 term = 
     | '(' t:expr ')'
