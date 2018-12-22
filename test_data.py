@@ -1,3 +1,4 @@
+test_data="""
 insert into graphs values (1, 1, 0);
 insert into nodes values (1, 1, "A");
 insert into nodes values (1, 2, "B");
@@ -39,4 +40,4 @@ insert into nodes values (4, 14, "D");
 insert into edges values (11, 12, NULL);
 insert into edges values (11, 13, NULL);
 insert into edges values (12, 14, NULL);
-
+"""

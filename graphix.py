@@ -1,5 +1,6 @@
 from codecs import open
 import tatsu, sqlite3, os, hashlib
+from db import DB
 
 import cmd
 
@@ -72,20 +73,8 @@ class QuerySemantics(object):
             return ast
         else:
             return "" 
+
     
-exists = False
-if os.path.isfile("graphix.db"):
-    exists = True   
-
-grammar = open('graphix.tatsu').read()
-parser = tatsu.compile(grammar)
-
-conn = sqlite3.connect('graphix.db')
-c = conn.cursor()
-
-if not exists:
-    c.executescript(sql)
-    #ic.executescript(data)
 
 class CommandLine(cmd.Cmd):
     def __init__(self, logging=False):
@@ -93,15 +82,22 @@ class CommandLine(cmd.Cmd):
         self.logging = logging
         if logging:
             self.logfp = open("log.html", "w")
+        if os.path.isfile("Graphix.db"):
+            self.db = DB("Graphix.db", False)
+        else:
+            self.db = DB("Graphix.db")
 
+        grammar = open('graphix.tatsu').read()
+        self.parser = tatsu.compile(grammar)
 
     def default(self, utterance):
-        ast = parser.parse(utterance, semantics=QuerySemantics())
+        ast = self.parser.parse(utterance, semantics=QuerySemantics())
         print "AST " + str(ast)
-        c.execute(ast)
+        #c.execute(ast)
         dot = Digraph(format='png')
         cnt = 0
-        for row in c.fetchall():
+        #for row in c.fetchall():
+        for row in self.db.query(ast):
             cnt += 1
             #print str(row)
             dot.edge(row[0].encode("ascii", "ignore"), row[1].encode("ascii", "ignore"), "")
@@ -128,5 +124,6 @@ class CommandLine(cmd.Cmd):
             self.logfp.close()
         return True
 
-CommandLine(True).cmdloop()
+if __name__ == '__main__':
+    CommandLine(True).cmdloop()
 
