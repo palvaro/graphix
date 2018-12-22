@@ -2,8 +2,7 @@ import unittest, tatsu, sqlite3, os
 from graphix import QuerySemantics
 
 
-from graphix import sql
-from db import DB
+from db import DB, sql
 
 class TestDB(unittest.TestCase):
     def testDB(self):
@@ -55,6 +54,7 @@ class E2ETest(unittest.TestCase):
         self.db.testdata()
 
     def do(self, utterance):
+        print "GO " + self.parser.parse(utterance, semantics=QuerySemantics())
         return self.db.query(self.parser.parse(utterance, semantics=QuerySemantics()))
 
     def testAll(self):
@@ -69,6 +69,11 @@ class E2ETest(unittest.TestCase):
         for l,r in equivs:
             print l + " vs " + r
             self.assertEqual(set(self.do(l)), set(self.do(r)))
+
+    def testTest(self):
+        #for row in self.do("1 - 3"):
+        #    print str(row)
+        self.assertEqual(set(self.do("1-3")), set([(u'C', u'D')]))
 
 
 if __name__ == '__main__':

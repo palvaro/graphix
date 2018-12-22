@@ -8,33 +8,6 @@ from tatsu.ast import AST
 from pprint import pprint
 from graphviz import Digraph
 
-sql="""
-create table graphs (
-    graph_id int,
-    graph_class int,
-    status int
-);
-
-create table nodes (
-    graph_id int,
-    node_id int,
-    name varchar(255)
-);
-
-create table edges (
-    from_node int,
-    to_node int,
-    label varchar(255)
-);
-
-create view logical as
-select from_x.graph_id, from_x.name from_n, to_x.name to_n
-     from nodes from_x, nodes to_x, edges e
-        where from_x.node_id = e.from_node
-        and to_x.node_id = e.to_node;
-"""
-
-
 class QuerySemantics(object):
     def barenumber(self, ast):
         return "select from_n, to_n from logical where graph_id = " + ast.n
@@ -68,7 +41,11 @@ class QuerySemantics(object):
         if not isinstance(ast, AST):
             return ast
         else:
-            return "select * from (" + ast.left + " EXCEPT " + ast.right + ")"
+            #return "select * from (" + ast.left + " EXCEPT " + ast.right + ")"
+            rhs1 = "select from_n from (" + ast.right + ")"
+            rhs2 = "select to_n from (" + ast.right + ")"
+            uni = rhs1 + " UNION " + rhs2 
+            return "select * from (select * from (" + ast.left + ") where from_n not in (" + uni + ") and to_n not in (" + uni + ") EXCEPT " + ast.right + ")"
 
 
     def term(self, ast):
@@ -104,10 +81,10 @@ class CommandLine(cmd.Cmd):
         self.logging = logging
         if logging:
             self.logfp = open("log.html", "w")
-        if os.path.isfile("Graphix.db"):
-            self.db = DB("Graphix.db", False)
+        if os.path.isfile("graphix.db"):
+            self.db = DB("graphix.db", False)
         else:
-            self.db = DB("Graphix.db")
+            self.db = DB("graphix.db")
 
         grammar = open('graphix.tatsu').read()
         self.parser = tatsu.compile(grammar)
