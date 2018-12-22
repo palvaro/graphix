@@ -1,4 +1,5 @@
 import unittest, tatsu, sqlite3, os
+from graphix import QuerySemantics
 
 
 from graphix import sql
@@ -45,6 +46,29 @@ class TestGraphix(unittest.TestCase):
 
     #def tearDown(self):
     #    os.remove("test.db")
+
+class E2ETest(unittest.TestCase):
+    def setUp(self):
+        grammar = open('graphix.tatsu').read()
+        self.parser = tatsu.compile(grammar)
+        self.db = DB("test.db")
+        self.db.testdata()
+
+    def do(self, utterance):
+        return self.db.query(self.parser.parse(utterance, semantics=QuerySemantics()))
+
+    def testAll(self):
+        #results = set(self.do("1 - 3"))
+        #print "results " + str(results)
+        equivs = [  ("1 ^ 2", "2 ^ 1"), 
+                    ("1 U 2", "2 U 1"),
+                    ("(1 U 2 U 4) ^ 1", "1"),
+                    ("(1 ^ 2 ^ 4)", "4 ^ 1 ^ 2"),
+        ]
+
+        for l,r in equivs:
+            print l + " vs " + r
+            self.assertEqual(set(self.do(l)), set(self.do(r)))
 
 
 if __name__ == '__main__':
